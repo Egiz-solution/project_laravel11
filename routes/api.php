@@ -28,3 +28,4 @@ Route::get('/example', function () {
 Route::apiResource('posts', PostController::class);
 
 
+

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Http\Response;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -31,9 +31,26 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        return Post::create($request->all());
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+
+        }
+        $product = new Post();
+        $product->title = $request->title;
+        $product->content = $request->content;
+        $product->image = $imageName;
+        $product->save();
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post created successfully',
+            'post' => $product,
+        ], Response::HTTP_CREATED);
     }
 
     /**
