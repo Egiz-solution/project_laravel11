@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Response;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -35,9 +38,8 @@ class PostController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imageName = time().'.'.$request->image->extension();
+            $imageName = time() . '.' . $request->image->extension();
             $request->image->move(public_path('images'), $imageName);
-
         }
         $product = new Post();
         $product->title = $request->title;
@@ -81,7 +83,12 @@ class PostController extends Controller
 
         $post->update($request->all());
 
-        return $post;
+        // return response()->noContent();
+        return response()->json([
+            'success' => true,
+            'message' => 'Post Update successfully',
+            'post' => $post,
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -91,6 +98,11 @@ class PostController extends Controller
     {
         $post->delete();
 
-        return response()->noContent();
+        // return response()->noContent();
+        return response()->json([
+            'success' => true,
+            'message' => 'Post Deleted successfully',
+            'post' => $post,
+        ], Response::HTTP_CREATED);
     }
 }
